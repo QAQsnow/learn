@@ -2,11 +2,9 @@
 
 //定义选择器方法，并且让根元素继承
 window.$=HTMLElement.prototype=function(elem){
-	var sel=document.querySelector,
-		selAll=document.querySelectorAll;
-	return selAll(elem)?selAll(elem).length==1?sel(elem):selAll(elem):null;
+	return document.querySelectorAll(elem)?document.querySelectorAll(elem).length==1?document.querySelector(elem):document.querySelectorAll(elem):null;
 }
-
+console.log($(".show li"))
 var carousel={
 	WIDTH:0,
 	TOTTIME:3000,
@@ -14,24 +12,39 @@ var carousel={
 	timer:null,
 	TOTSTEP:50,
 	step:0,
+	curStep:0,
 	init:function(){//初始化方法
 		//获取每个li的宽度取整
-		this.WIDTH=parseInt($(".show li")[0].style.width);
-		
+		this.WIDTH=parseInt(getComputedStyle($(".show li")[0]).width);
+		console.log(this.WIDTH);
+		this.move();
+		this.autoPlay()
+	},
+	autoPlay:function(){
+		setInterval(this.move.bind(this),3000);
 	},
 	move:function(){
-		//获取图片展示的left值
-		var left=$(".show")[0].style.left;
+		//获取父元素的left值
+		var left=parseInt(getComputedStyle($(".show")).left);
 		//计算每一帧的速度
-		var this.speed=this.TOTTIME/this.TOTSTEP;
-		//记录走了的步数
-		var curStep=0;
-		//图片开始移动
+		this.speed=this.WIDTH/this.TOTSTEP;
 		
-		//判断走过的步数是否大于总步数
-		if(curStep>this.TOTSTEP){
-			
-		}
+			console.log(this.curStep);
+			//设置定时器
+			this.timer=setInterval(function(){
+					//步数+1
+					this.curStep+=1;
+					//计算当前left的值
+					left-=this.speed;
+					//获取计算后的left值，赋值给父元素
+					$(".show").style.left=left+"px"
+					console.log(this.curStep,this.TOTSTEP);
+					if(this.curStep>=this.TOTSTEP){
+						clearInterval(this.timer);
+					}
+			}.bind(this),300);
 	},
 }
- 
+ window.onload=function(){
+	 carousel.init();
+ }
